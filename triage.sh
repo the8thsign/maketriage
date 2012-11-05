@@ -1,14 +1,23 @@
-#!/bin/bash
+#! /bin/sh
 
 # TRIAGE DRIVE DUPLICATION SCRIPT
 
-# This script should be run from the same directory as the APM folder, which contains all the .dmg files for restoring triage partitions.
+# This script should be run from the same directory as the IMAGES folder, which contains all the .dmg files for restoring triage and ASD partitions.
+
+# 
+# root folder
+# |   |-- IMAGES 
+# |   +-- ASD
+# +-- make.sh
+
+
 # Make sure the filepath to the script has no spaces in it.
 # For instructions on how the partitions were built, check the readme file.
 # For info on what the script does and why, and how to change it, read the comments below.
 
-# Created August 2009 by Genius Jonathan Meier - West 14th Street/R250
-# jmeier@apple.com (or jonathanmeier@mac.com if I've left the company precipitously)
+# Original script created by Jonathan Meier - West 14th Street/R250
+# Script modified by Alec Peden - Danbury Fair Mall/R093
+
 
 clear
 # In order to allow you to run this script from anywhere, the path to the script file needs to be set as a variable so the disk images can be found relative to that file.  That's what this first step does.
