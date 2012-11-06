@@ -8,36 +8,21 @@ This script should be run from the same directory as the IMAGES and ASD folder, 
 
 
 root folder
-
-|   |-- IMAGES 
-
+|   |-- IMAGES
 |   +-- ASD
-
 +-- triage.sh
-
-
-
-
 
 
 ## Basic Usage
 
 
-
 ## Configuration
-
 
 
 ## Documentation
 
 
-
-## Plugins
-
-
-
 ## Contributing
-
 
 
 ## License
