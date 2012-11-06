@@ -2,13 +2,13 @@
 
 # TRIAGE DRIVE DUPLICATION SCRIPT
 
-# This script should be run from the same directory as the IMAGES folder, which contains all the .dmg files for restoring triage and ASD partitions.
+# This script should be run from the same directory as the IMAGES and ASD folder, which contains all the .dmg files for restoring triage and ASD partitions.
 
 # 
 # root folder
 # |   |-- IMAGES 
 # |   +-- ASD
-# +-- make.sh
+# +-- triage.sh
 
 
 # Make sure the filepath to the script has no spaces in it.
@@ -17,6 +17,15 @@
 
 # Original script created by Jonathan Meier - West 14th Street/R250
 # Script modified by Alec Peden - Danbury Fair Mall/R093
+
+# Check to see user has root permisions. ASR needs root to run and instead of asking each time, we prompt only once.
+ROOT_UID="0"
+
+# Check if run as root
+if [ "$UID" -ne "$ROOT_UID" ] ; then
+	echo "You must be root to do that!"
+	exit 1
+fi
 
 
 clear
@@ -48,10 +57,10 @@ r|R)
 	echo "Genius Room Universal Triage Drive"
 
 # This step reformats the drive with Apple Partition Map and creates a single partition called NEW.  This step is necessary because if you have diskutil partition a blank disk with all of the partitions, it will number all of the devices with odd numbers only (i.e. disk2s3, disk2s5, etc.).  We want the partitions to number sequentially, so we have to create a single partition first, then use the splitPartition command to split it.  This numbers all of the new partitions in order, starting with 3.  Partitions 1 and 2 contain formatting information in APM.
-	sudo diskutil partitionDisk /dev/disk"$diskid" APMFormat JHFS+ NEW 0b
+	diskutil partitionDisk /dev/disk"$diskid" APMFormat JHFS+ NEW 0b
 
 # This step splits the NEW partition into multiple partitions so we can restore our disk images to them.  The formatting for this command is "volumeformat volumename volumesize."  All partitions are formatted JHFS+ (Journaled HFS+).  The names and numbers are there just for the sake of keeping the partitions straight in case you want to add some new ones or change the sizes, and the sizes are self-explanatory.  The ToolBox is set to 0b because if the last partiton in the scheme is set to 0 it will automatically utilize all of the remaining free space on the drive.
-	sudo diskutil splitPartition /Volumes/NEW JHFS+ 3-SnowTriage 20g JHFS+ 4-LeopardTriage 20g JHFS+ 5-TigerTriage 15g JHFS+ 6-SnowInstall 8g JHFS+ 7-LeopardInstall 8g JHFS+ 8-TigerInstallIntel 4g JHFS+ 9-TigerInstallPPC 4g JHFS+ 10-PantherInstall 2g JHFS+ 11-131-OS 10g JHFS+ 12-125-OS 10g JHFS+ 13-123-OS 10g JHFS+ 14-116-OS 3g JHFS+ 15-108-OS 2g JHFS+ 16-131-EFI .5g JHFS+ 17-125-EFI .5g JHFS+ 18-123-EFI .5g JHFS+ 19-116-EFI .5g JHFS+ 20-108-EFI .5g JHFS+ 21-2.6.3-OF .5g JHFS+ 22-2.5.8-OF .5g JHFS+ 23-2.3.3-OF .5g JHFS+ 24-2.2.2-OF .5g JHFS+ 25-2.1.5-OF .5g JHFS+ 26-2.1.4-OF .5g JHFS+ 27-Serializer .5g JHFS+ ToolBox 0b
+	diskutil splitPartition /Volumes/NEW JHFS+ 3-SnowTriage 20g JHFS+ 4-LeopardTriage 20g JHFS+ 5-TigerTriage 15g JHFS+ 6-SnowInstall 8g JHFS+ 7-LeopardInstall 8g JHFS+ 8-TigerInstallIntel 4g JHFS+ 9-TigerInstallPPC 4g JHFS+ 10-PantherInstall 2g JHFS+ 11-131-OS 10g JHFS+ 12-125-OS 10g JHFS+ 13-123-OS 10g JHFS+ 14-116-OS 3g JHFS+ 15-108-OS 2g JHFS+ 16-131-EFI .5g JHFS+ 17-125-EFI .5g JHFS+ 18-123-EFI .5g JHFS+ 19-116-EFI .5g JHFS+ 20-108-EFI .5g JHFS+ 21-2.6.3-OF .5g JHFS+ 22-2.5.8-OF .5g JHFS+ 23-2.3.3-OF .5g JHFS+ 24-2.2.2-OF .5g JHFS+ 25-2.1.5-OF .5g JHFS+ 26-2.1.4-OF .5g JHFS+ 27-Serializer .5g JHFS+ ToolBox 0b
 
 # We're setting our count to 2 because we want to ignore diskXs1 and diskXs2, since they hold APM formatting info and we're not restoring anything to them
 	count=2
@@ -63,7 +72,7 @@ r|R)
 # This part is the actual restore command using ASR.  First we add 1 to the count (so the first partition it restores will be 3) then we tell it to restore using a disk image whose name starts with the count number and is followed by a dash and then the wildcard (so the actual remainder of the filename is irrelevant), and that it should pull that disk image from the APM directory which is located in the same directory as this script (the "dir" variable, which we got in the first step of the script).  The destination of the restore is on whatever disk we told it to erase in step 2, and its partition number is the same as the count.  The --erase tag initiates a block-level copy, --noprompt restores without requiring a confirmation, and --noverify restores the partition without going over it a second time to verify the restore (cuts restore time in half).
 	do
 		count=`expr $count + 1`
-		sudo asr restore --source "$dir"/APM/$count-* --target /dev/disk"$diskid"s$count --erase --noprompt --noverify
+		asr restore --source "$dir"/APM/$count-* --target /dev/disk"$diskid"s$count --erase --noprompt --noverify
 		echo "Partition $count completed"
 	done
 	echo
@@ -79,10 +88,10 @@ b|B)
 	echo "Genius Bar Universal Triage Drive"
 
 # Same as above.
-	sudo diskutil partitionDisk /dev/disk"$diskid" APMFormat JHFS+ NEW 0b
+	diskutil partitionDisk /dev/disk"$diskid" APMFormat JHFS+ NEW 0b
 
 # Same as above, except no ASD partitions.
-	sudo diskutil splitPartition /Volumes/NEW JHFS+ 3-SnowTriage 20g JHFS+ 4-LeopardTriage 20g JHFS+ 5-TigerTriage 15g JHFS+ 6-SnowInstall 8g JHFS+ 7-LeopardInstall 8g JHFS+ 8-TigerInstallIntel 4g JHFS+ 9-TigerInstallPPC 4g JHFS+ 10-PantherInstall 2g JHFS+ ToolBox 0b
+	diskutil splitPartition /Volumes/NEW JHFS+ 3-SnowTriage 20g JHFS+ 4-LeopardTriage 20g JHFS+ 5-TigerTriage 15g JHFS+ 6-SnowInstall 8g JHFS+ 7-LeopardInstall 8g JHFS+ 8-TigerInstallIntel 4g JHFS+ 9-TigerInstallPPC 4g JHFS+ 10-PantherInstall 2g JHFS+ ToolBox 0b
 
 # Same as above.
 	count=2
@@ -94,13 +103,13 @@ b|B)
 # Same as above.
 	do
 		count=`expr $count + 1`
-		sudo asr restore --source "$dir"/APM/$count-* --target /dev/disk"$diskid"s$count --erase --noprompt --noverify
+		asr restore --source "$dir"/APM/$count-* --target /dev/disk"$diskid"s$count --erase --noprompt --noverify
 		echo "Partition $count completed"
 	done
 
 # This is the step that manually restores the ToolBox.
 # If you were to change the number of partitions on the drive, you'd need to change the numbers in here.
-	sudo asr restore --source "$dir"/APM/28-0b-ToolBox.dmg --target /dev/disk"$diskid"s11 --erase --noprompt --noverify
+	asr restore --source "$dir"/APM/28-0b-ToolBox.dmg --target /dev/disk"$diskid"s11 --erase --noprompt --noverify
 	echo "Partition ToolBox completed"
 	echo
 
