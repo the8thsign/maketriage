@@ -10,11 +10,9 @@
 # |   +-- ASD
 # +-- triage.sh
 
-# For instructions on how the partitions were built, check the readme file.
-# For info on what the script does and why, and how to change it, read the comments below.
 
-# Original script created by Jonathan Meier - West 14th Street/R250
-# Script modified by Alec Peden - Danbury Fair Mall/R093
+###############################################################################
+
 
 # Check to see user has root permisions. ASR needs root to run and instead of asking each time, we prompt only once.
 ROOT_UID="0"
