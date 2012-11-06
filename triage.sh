@@ -4,14 +4,12 @@
 
 # This script should be run from the same directory as the IMAGES and ASD folder, which contains all the .dmg files for restoring triage and ASD partitions.
 
-# 
+
 # root folder
 # |   |-- IMAGES 
 # |   +-- ASD
 # +-- triage.sh
 
-
-# Make sure the filepath to the script has no spaces in it.
 # For instructions on how the partitions were built, check the readme file.
 # For info on what the script does and why, and how to change it, read the comments below.
 
@@ -27,13 +25,9 @@ if [ "$UID" -ne "$ROOT_UID" ] ; then
 	exit 1
 fi
 
-
 clear
-# In order to allow you to run this script from anywhere, the path to the script file needs to be set as a variable so the disk images can be found relative to that file.  That's what this first step does.
-echo "Drag the script file you just opened to this"
-echo "window and hit enter so we can get the path."
-read location
-dir=( `dirname "$location"` )
+# Get current location of the script. This lets us run the script from anywhere with the images being relative.
+dir="$( cd "$( dirname "$0" )" && pwd )"
 
 clear
 # Step two pulls the disk identifier from the drive you want to image (e.g. for /dev/disk0s4, the disk identifier is "0").  We're doing it this way because if you try to run the ASR restores using volume names (e.g. /Volumes/Snow\ Triage), the restore will fail if for some reason the volume you're trying to restore isn't mounted.  Sometimes unmounting a volume causes other volumes on the same drive to unmount as well, and if they don't remount fast enough you have problems.  Connected drives are always available through /dev however, so this is a more reliable way to restore.  This step also ensures that you will erase the correct drive if you have multiple drives attached to the computer, since the device tree numbers drives in the order they are connected to the computer.
