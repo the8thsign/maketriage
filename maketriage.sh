@@ -51,10 +51,7 @@ a|A)
 # This step reformats the drive with Apple Partition Map and creates a single partition called NEW.  This step is necessary because if you have diskutil partition a blank disk with all of the partitions, it will number all of the devices with odd numbers only (i.e. disk2s3, disk2s5, etc.).  We want the partitions to number sequentially, so we have to create a single partition first, then use the splitPartition command to split it.  This numbers all of the new partitions in order, starting with 3.  Partitions 1 and 2 contain formatting information in APM.
 	diskutil partitionDisk /dev/disk"$diskid" APMFormat JHFS+ NEW 0b
 
-# This step splits the NEW partition into multiple partitions so we can restore our disk images to them.  The formatting for this command is "volumeformat volumename volumesize."  All partitions are formatted JHFS+ (Journaled HFS+).  The names and numbers are there just for the sake of keeping the partitions straight in case you want to add some new ones or change the sizes, and the sizes are self-explanatory.  The ToolBox is set to 0b because if the last partiton in the scheme is set to 0 it will automatically utilize all of the remaining free space on the drive.
-#	diskutil splitPartition /Volumes/NEW JHFS+ 3-SnowTriage 20g JHFS+ 4-LeopardTriage 20g JHFS+ 5-TigerTriage 15g JHFS+ 6-SnowInstall 8g JHFS+ 7-LeopardInstall 8g JHFS+ 8-TigerInstallIntel 4g JHFS+ 9-TigerInstallPPC 4g JHFS+ 10-PantherInstall 2g JHFS+ 11-131-OS 10g JHFS+ 12-125-OS 10g JHFS+ 13-123-OS 10g JHFS+ 14-116-OS 3g JHFS+ 15-108-OS 2g JHFS+ 16-131-EFI .5g JHFS+ 17-125-EFI .5g JHFS+ 18-123-EFI .5g JHFS+ 19-116-EFI .5g JHFS+ 20-108-EFI .5g JHFS+ 21-2.6.3-OF .5g JHFS+ 22-2.5.8-OF .5g JHFS+ 23-2.3.3-OF .5g JHFS+ 24-2.2.2-OF .5g JHFS+ 25-2.1.5-OF .5g JHFS+ 26-2.1.4-OF .5g JHFS+ 27-Serializer .5g JHFS+ ToolBox 0b
-
-
+# This step splits the NEW partition into multiple partitions so we can restore our disk images to them.  The formatting for this command is "volumeformat volumename volumesize."  All partitions are formatted JHFS+ (Journaled HFS+).  The names and numbers are there just for the sake of keeping the partitions straight in case you want to add some new ones or change the sizes, and the sizes are self-explanatory.  The Free is set to 0b because if the last partiton in the scheme is set to 0 it will automatically utilize all of the remaining free space on the drive.
 	diskutil splitPartition /Volumes/NEW JHFS+ 3-150-OS 10g JHFS+ 4-149-OS 10g JHFS+ 5-148-OS 10g JHFS+ 6-147-OS 10g JHFS+ 7-146-OS 10g JHFS+ 8-145-OS 10g JHFS+ 9-144-OS 10g JHFS+ 10-142-OS 10g JHFS+ 11-140-OS 10g JHFS+ 12-139-OS 10g JHFS+ 13-138-OS 10g JHFS+ 14-132-OS 10g JHFS+ 15-123-OS 10g JHFS+ 16-116-OS 10g JHFS+ 17-108-OS 10g JHFS+ 18-150-EFI .5g JHFS+ 19-149-EFI .5g JHFS+ 20-148-EFI .5g JHFS+ 21-147-EFI .5g JHFS+ 22-146-EFI .5g JHFS+ 23-145-EFI .5g JHFS+ 24-144-EFI .5g JHFS+ 25-142-EFI .5g JHFS+ 26-140-EFI .5g JHFS+ 27-139-EFI .5g JHFS+ 28-138-EFI .5g JHFS+ 29-132-EFI .5g JHFS+ 30-123-EFI .5g JHFS+ 31-116-EFI .5g JHFS+ 32-108-EFI .5g JHFS+ 33-Serializer .5g JHFS+ FREE 0b
 
 
@@ -105,7 +102,7 @@ b|B)
 
 # This is the step that manually restores the ToolBox.
 # If you were to change the number of partitions on the drive, you'd need to change the numbers in here.
-	asr restore --source "$dir"/IMAGES/28-ToolBox.dmg --target /dev/disk"$diskid"s11 --erase --noprompt --noverify
+	asr restore --source "$dir"/IMAGES/ToolBox.dmg --target /dev/disk"$diskid"s11 --erase --noprompt --noverify
 	echo "Partition ToolBox completed"
 	echo
 
@@ -113,7 +110,7 @@ b|B)
 	echo "Genius Bar Drive created successfully"
 ;;
 
-# This step quits the script if you type something other than b or r when it prompts you for Room drive or Bar drive.
+# This step quits the script if you type something other than a or b when it prompts you for Triage drive or ASD drive.
 *)
 	clear
 	echo "You did not follow directions."
