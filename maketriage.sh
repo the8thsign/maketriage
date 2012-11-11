@@ -52,7 +52,7 @@ a|A)
 	diskutil partitionDisk /dev/disk"$diskid" APMFormat JHFS+ NEW 0b
 
 # This step splits the NEW partition into multiple partitions so we can restore our disk images to them.  The formatting for this command is "volumeformat volumename volumesize."  All partitions are formatted JHFS+ (Journaled HFS+).  The names and numbers are there just for the sake of keeping the partitions straight in case you want to add some new ones or change the sizes, and the sizes are self-explanatory.  The Free is set to 0b because if the last partition in the scheme is set to 0 it will automatically utilize all of the remaining free space on the drive.
-	diskutil splitPartition /Volumes/NEW JHFS+ 3-150-OS 10g JHFS+ 4-149-OS 10g JHFS+ 5-148-OS 10g JHFS+ 6-147-OS 10g JHFS+ 7-146-OS 10g JHFS+ 8-145-OS 10g JHFS+ 9-144-OS 10g JHFS+ 10-142-OS 10g JHFS+ 11-140-OS 10g JHFS+ 12-139-OS 10g JHFS+ 13-138-OS 10g JHFS+ 14-132-OS 10g JHFS+ 15-123-OS 10g JHFS+ 16-116-OS 10g JHFS+ 17-108-OS 10g JHFS+ 18-150-EFI .5g JHFS+ 19-149-EFI .5g JHFS+ 20-148-EFI .5g JHFS+ 21-147-EFI .5g JHFS+ 22-146-EFI .5g JHFS+ 23-145-EFI .5g JHFS+ 24-144-EFI .5g JHFS+ 25-142-EFI .5g JHFS+ 26-140-EFI .5g JHFS+ 27-139-EFI .5g JHFS+ 28-138-EFI .5g JHFS+ 29-132-EFI .5g JHFS+ 30-123-EFI .5g JHFS+ 31-116-EFI .5g JHFS+ 32-108-EFI .5g JHFS+ 33-Serializer .5g JHFS+ FREE 0b
+	diskutil splitPartition /Volumes/NEW JHFS+ 3-151-OS 10g JHFS+ 4-150-OS 10g JHFS+ 5-149-OS 10g JHFS+ 6-148-OS 10g JHFS+ 7-147-OS 10g JHFS+ 8-146-OS 10g JHFS+ 9-145-OS 10g JHFS+ 10-144-OS 10g JHFS+ 11-142-OS 10g JHFS+ 12-140-OS 10g JHFS+ 13-139-OS 10g JHFS+ 14-138-OS 10g JHFS+ 15-132-OS 10g JHFS+ 16-123-OS 10g JHFS+ 17-116-OS 10g JHFS+ 18-108-OS 10g JHFS+ 19-151-EFI .5g JHFS+ 20-150-EFI .5g JHFS+ 21-149-EFI .5g JHFS+ 22-148-EFI .5g JHFS+ 23-147-EFI .5g JHFS+ 24-146-EFI .5g JHFS+ 25-145-EFI .5g JHFS+ 26-144-EFI .5g JHFS+ 27-142-EFI .5g JHFS+ 28-140-EFI .5g JHFS+ 29-139-EFI .5g JHFS+ 30-138-EFI .5g JHFS+ 31-132-EFI .5g JHFS+ 32-123-EFI .5g JHFS+ 33-116-EFI .5g JHFS+ 34-108-EFI .5g JHFS+ 35-Serializer .5g JHFS+ FREE 0b
 
 
 # We're setting our count to 2 because we want to ignore diskXs1 and diskXs2, since they hold APM formatting info and we're not restoring anything to them
@@ -60,7 +60,7 @@ a|A)
 
 # This starts a count that will stop when we reach 33, which is the partition number of the ToolBox.
 # If you were to change the number of partitions on the drive, you'd need to change this number.
-	while [ $count -lt 33 ]
+	while [ $count -lt 35 ]
 
 # This part is the actual restore command using ASR.  First we add 1 to the count (so the first partition it restores will be 3) then we tell it to restore using a disk image whose name starts with the count number and is followed by a dash and then the wildcard (so the actual remainder of the filename is irrelevant), and that it should pull that disk image from the IMAGES directory which is located in the same directory as this script (the "dir" variable, which we got in the first step of the script).  The destination of the restore is on whatever disk we told it to erase in step 2, and its partition number is the same as the count.  The --erase tag initiates a block-level copy, --noprompt restores without requiring a confirmation, and --noverify restores the partition without going over it a second time to verify the restore (cuts restore time in half).
 	do
